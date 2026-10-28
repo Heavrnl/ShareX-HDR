@@ -138,6 +138,10 @@ namespace ShareX
 
                 UploadManager.RunImageTask(metadata, taskSettings);
             }
+            else
+            {
+                TaskManager.ScheduleMemoryTrim(2000);
+            }
         }
 
         protected TaskMetadata CreateMetadata()

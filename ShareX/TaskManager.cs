@@ -385,6 +385,8 @@ namespace ShareX
                                     };
 
                                     NotificationForm.Show(toastConfig);
+                                    task.KeepImage = false;
+                                    task.Dispose();
 
                                     if (info.TaskSettings.AfterUploadJob.HasFlag(AfterUploadTasks.ShowAfterUploadWindow) && info.IsUploadJob)
                                     {

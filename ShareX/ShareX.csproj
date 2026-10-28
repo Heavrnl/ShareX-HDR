@@ -13,6 +13,7 @@
     <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
     <ApplicationDefaultFont>Microsoft Sans Serif, 8.25pt</ApplicationDefaultFont>
     <CETCompat>false</CETCompat>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Win32.Interoperability" />
@@ -53,5 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Globalization.UseNls" Value="true" />
+    <RuntimeHostConfigurationOption Include="System.GC.Server" Value="false" />
+    <RuntimeHostConfigurationOption Include="System.GC.TrimCommit" Value="true" />
   </ItemGroup>
 </Project>

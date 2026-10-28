@@ -360,9 +360,11 @@ namespace ShareX.HelpersLib
         {
             try
             {
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
                 GC.WaitForPendingFinalizers();
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
                 SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (IntPtr)(-1), (IntPtr)(-1));
             }
             catch (Exception ex)
