@@ -93,7 +93,15 @@ namespace ShareX.Setup
         private static string RecorderDevicesSetupPath => Path.Combine(OutputDir, $"recorder-devices-{RecorderDevicesVersion}-setup.exe");
         private static string MakeAppxPath => Path.Combine(WindowsKitsDir, "x64", "makeappx.exe");
 
-        private const string InnoSetupCompilerPath = @"C:\Program Files (x86)\Inno Setup 6\ISCC.exe";
+        private static string InnoSetupCompilerPath
+        {
+            get
+            {
+                string localApp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Programs\Inno Setup 6\ISCC.exe");
+                if (File.Exists(localApp)) return localApp;
+                return @"C:\Program Files (x86)\Inno Setup 6\ISCC.exe";
+            }
+        }
         private const string FFmpegVersion = "8.1";
         private static string FFmpegDownloadURL => $"https://github.com/ShareX/FFmpeg/releases/download/v{FFmpegVersion}/ffmpeg-{FFmpegVersion}-win-{Platform}.zip";
         private const string RecorderDevicesVersion = "0.12.10";
@@ -113,7 +121,18 @@ namespace ShareX.Setup
             {
                 Console.WriteLine("Cleaning output directory: " + OutputDir);
 
-                Directory.Delete(OutputDir, true);
+                foreach (string file in Directory.GetFiles(OutputDir))
+                {
+                    string name = Path.GetFileName(file);
+                    if (!name.Equals("ffmpeg.exe", StringComparison.OrdinalIgnoreCase) && !name.StartsWith("recorder-devices", StringComparison.OrdinalIgnoreCase))
+                    {
+                        File.Delete(file);
+                    }
+                }
+                foreach (string dir in Directory.GetDirectories(OutputDir))
+                {
+                    Directory.Delete(dir, true);
+                }
             }
 
             if (Job.HasFlag(SetupJobs.DownloadTools))
