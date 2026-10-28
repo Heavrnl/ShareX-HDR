@@ -358,9 +358,17 @@ namespace ShareX.HelpersLib
 
         public static void TrimMemoryUse()
         {
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (IntPtr)(-1), (IntPtr)(-1));
+            try
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                GC.WaitForPendingFinalizers();
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (IntPtr)(-1), (IntPtr)(-1));
+            }
+            catch (Exception ex)
+            {
+                DebugHelper.WriteException(ex);
+            }
         }
 
         public static bool IsWindowCloaked(IntPtr handle)

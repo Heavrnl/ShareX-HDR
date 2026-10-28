@@ -113,8 +113,14 @@ namespace ShareX
 
             if (Config.Image != null)
             {
-                Config.Image = ImageHelpers.ResizeImageLimit(Config.Image, Config.Size);
+                Bitmap originalImage = Config.Image;
+                Config.Image = ImageHelpers.ResizeImageLimit(originalImage, Config.Size);
                 Config.Size = new Size(Config.Image.Width + 2, Config.Image.Height + 2);
+
+                if (!ReferenceEquals(originalImage, Config.Image))
+                {
+                    originalImage.Dispose();
+                }
             }
             else if (!string.IsNullOrEmpty(Config.Text))
             {

@@ -323,6 +323,27 @@ namespace ShareX
             DebugHelper.Flush();
         }
 
+        private static bool avaloniaInitialized;
+        private static readonly object avaloniaInitLock = new object();
+
+        public static void EnsureAvaloniaInitialized()
+        {
+            if (!avaloniaInitialized)
+            {
+                lock (avaloniaInitLock)
+                {
+                    if (!avaloniaInitialized)
+                    {
+                        DebugHelper.WriteLine("Avalonia lazy init started.");
+                        Application.AddMessageFilter(new WinFormsAvaloniaMessageFilter());
+                        AvaloniaIntegration.Initialize();
+                        avaloniaInitialized = true;
+                        DebugHelper.WriteLine("Avalonia lazy init finished.");
+                    }
+                }
+            }
+        }
+
         private static void ConfigureImageEditorDiagnostics()
         {
             EditorServices.Diagnostics = new DelegateEditorDiagnosticsSink(diagnostic =>
@@ -383,10 +404,8 @@ namespace ShareX
             CheckPuushMode();
             DebugWriteFlags();
 
-            DebugHelper.WriteLine("Avalonia init started.");
-            Application.AddMessageFilter(new WinFormsAvaloniaMessageFilter());
-            AvaloniaIntegration.Initialize();
-            DebugHelper.WriteLine("Avalonia init finished.");
+            // Avalonia will be lazily initialized when modern editor or viewer is first requested
+            // to keep tray and capture idle footprint below 50MB.
 
             SettingManager.LoadInitialSettings();
             Screenshot.PrewarmHdrCapture();
@@ -398,6 +417,11 @@ namespace ShareX
             DebugHelper.WriteLine("MainForm init started.");
             MainForm = new MainForm();
             DebugHelper.WriteLine("MainForm init finished.");
+
+            if (SilentRun)
+            {
+                TaskManager.ScheduleMemoryTrim(3000);
+            }
 
             Application.Run(MainForm);
 

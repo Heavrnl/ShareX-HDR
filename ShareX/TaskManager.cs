@@ -259,6 +259,7 @@ namespace ShareX
                 if (task != null)
                 {
                     task.KeepImage = false;
+                    TrimCompletedTasks();
 
                     if (task.RequestSettingUpdate)
                     {
@@ -421,6 +422,8 @@ namespace ShareX
                     {
                         SettingManager.SaveAllSettingsAsync();
                     }
+
+                    ScheduleMemoryTrim(15000);
                 }
             }
         }
@@ -545,6 +548,39 @@ namespace ShareX
                 {
                     WorkerTask task = WorkerTask.CreateHistoryTask(recentTask);
                     Start(task);
+                }
+            }
+        }
+
+        private const int MaxTasksLimit = 50;
+        private static System.Threading.Timer memoryTrimTimer;
+
+        public static void ScheduleMemoryTrim(int delayMilliseconds = 15000)
+        {
+            lock (Tasks)
+            {
+                memoryTrimTimer ??= new System.Threading.Timer(_ =>
+                {
+                    if (!IsBusy)
+                    {
+                        DebugHelper.WriteLine("Idle memory trim triggered.");
+                        NativeMethods.TrimMemoryUse();
+                    }
+                });
+
+                memoryTrimTimer.Change(delayMilliseconds, System.Threading.Timeout.Infinite);
+            }
+        }
+
+        private static void TrimCompletedTasks()
+        {
+            lock (Tasks)
+            {
+                while (Tasks.Count > MaxTasksLimit)
+                {
+                    WorkerTask oldest = Tasks.FirstOrDefault(t => !t.IsBusy && !t.IsWorking);
+                    if (oldest == null) break;
+                    Remove(oldest);
                 }
             }
         }

@@ -1309,6 +1309,10 @@ namespace ShareX
             {
                 Program.Settings.MainFormSize = Size;
             }
+            else if (WindowState == FormWindowState.Minimized)
+            {
+                TaskManager.ScheduleMemoryTrim(1000);
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

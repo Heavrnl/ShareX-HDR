@@ -64,6 +64,7 @@ namespace ShareX
                     source.MasterPixels.Height)
                 : null;
 
+            Program.EnsureAvaloniaInitialized();
             using EditorOverlayDialogResult editorResult =
                 AvaloniaIntegration.ShowEditorOverlayDialog(
                     skPreview,

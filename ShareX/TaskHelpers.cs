@@ -1125,6 +1125,7 @@ namespace ShareX
 
         public static void OpenImageComparer()
         {
+            Program.EnsureAvaloniaInitialized();
             AvaloniaIntegration.ShowImageComparerWindow();
         }
 
@@ -1132,6 +1133,7 @@ namespace ShareX
         {
             if (taskSettings == null) taskSettings = TaskSettings.GetDefaultTaskSettings();
 
+            Program.EnsureAvaloniaInitialized();
             AvaloniaIntegration.ShowBackgroundRemoverWindow(Program.ModelsFolder, taskSettings.ToolsSettingsReference.BackgroundRemoverOptions);
         }
 
@@ -1816,6 +1818,7 @@ namespace ShareX
 
         private static Bitmap AnnotateImageModern(Bitmap bmp, string filePath, TaskSettings taskSettings, bool taskMode = false)
         {
+            Program.EnsureAvaloniaInitialized();
             Bitmap bmpResult = null;
 
             EditorEvents events = new EditorEvents
